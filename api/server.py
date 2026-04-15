@@ -44,7 +44,7 @@ Date of Visit: {visit.date_of_visit}
 Notes:
 {visit.notes}"""
 
-@app.post("/api/consultation")
+@app.post("/consultation")
 def consultation_summary(
     visit: Visit,
     creds: HTTPAuthorizationCredentials = Depends(clerk_guard),
