@@ -18,11 +18,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
 
-      # `uv.lock` does not install uv — Vercel's local `vercel build` invokes `uv` for Python.
-      # This step must run before `vercel build` (see https://vercel.link/python-version).
-      - uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+      - uses: astral-sh/setup-uv
         with:
           enable-cache: true
           python-version: "3.12"
@@ -30,17 +27,11 @@ jobs:
       - name: Verify uv is on PATH
         run: command -v uv && uv --version
 
-      - name: Install dependencies
-        run: npm ci
-
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
       - name: Pull Vercel project settings
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy prebuilt bundle
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy to production
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
