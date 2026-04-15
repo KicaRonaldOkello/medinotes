@@ -1,6 +1,6 @@
 # MediNotes Pro
 
-MediNotes Pro is a web app for clinicians: you sign in, enter visit details and consultation notes, and get a **streaming AI response** with a structured summary for the record, suggested next steps, and a patient-friendly email draft. The UI is **Next.js** (static export) with **Clerk** for authentication; the consultation endpoint is implemented as **FastAPI** with OpenAI (see `backend/server.py` and the `Dockerfile` for the combined static + API layout).
+MediNotes Pro is a web app for clinicians: you sign in, enter visit details and consultation notes, and get a **streaming AI response** with a structured summary for the record, suggested next steps, and a patient-friendly email draft. The UI is **Next.js** (static export) with **Clerk** for authentication; the consultation API is **FastAPI** + OpenAI (see `api/server.py`). **Vercel** picks up the ASGI app via `pyproject.toml` (`app = "api.server:app"`) and Python deps via `requirements.txt`; **Docker** serves the same API plus the exported static site (see `Dockerfile`).
 
 ## Environment variables
 
@@ -15,15 +15,22 @@ Add a **`.env.local`** file with your Clerk application keys (from the [Clerk da
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key (safe for the browser) |
 | `CLERK_SECRET_KEY` | Clerk secret key (server-side; required for Clerk in Next.js) |
 
-### Full stack with Docker (UI + `/api/consultation`)
+### FastAPI (Vercel and/or Docker)
 
-The Docker image builds the static site and serves it from **FastAPI** on port 8000. Use a **`.env`** file or `-e` flags at `docker run` time for runtime secrets:
+Set these wherever the Python API runs (Vercel **Production** env, or Docker `-e` / `.env`):
+
+| Variable | Purpose |
+| --- | --- |
+| `CLERK_JWKS_URL` | Clerk JWKS URL for validating JWTs in FastAPI |
+| `OPENAI_API_KEY` | OpenAI API key (used by the streaming completion) |
+
+### Docker only (combined static + API on one port)
+
+The Docker image builds the static site and serves it from **FastAPI** on port 8000. You still need the runtime secrets above, plus:
 
 | Variable | Purpose |
 | --- | --- |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Passed as a Docker **build arg** so the static bundle includes Clerk |
-| `CLERK_JWKS_URL` | Clerk JWKS URL for validating JWTs in FastAPI |
-| `OPENAI_API_KEY` | OpenAI API key (used by the streaming completion) |
 
 ## Run locally
 
@@ -54,7 +61,7 @@ Then open [http://localhost:8000](http://localhost:8000).
 vercel --prod
 ```
 
-The Next.js app uses **static export**; Vercel hosts that bundle. Live **consultation streaming** is provided by **FastAPI** in this repo (for example via the Docker image), not by the static export alone, unless you host the API elsewhere and point the client at it.
+The Next.js app uses **static export**; Vercel hosts that bundle. **FastAPI** is configured for the same project via `pyproject.toml` and `requirements.txt` ([Vercel FastAPI](https://vercel.com/docs/frameworks/backend/fastapi)). Ensure `OPENAI_API_KEY` and `CLERK_JWKS_URL` are set in the Vercel project for **Production** (and Preview if you use it). For local `npm run dev`, the browser still calls `/api/consultation` on the Next dev server unless you proxy to FastAPI or use Docker on port 8000.
 
 ## Deploy on Vercel (GitHub Actions)
 

@@ -1,0 +1,8 @@
+[project]
+name = "medinotes"
+version = "0.1.0"
+description = "MediNotes FastAPI configuration for Vercel"
+
+[project.scripts]
+app = "api.index:app"
+

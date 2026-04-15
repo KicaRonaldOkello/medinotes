@@ -91,4 +91,3 @@ if static_path.exists():
     
     # Mount static files for all other routes
     app.mount("/", StaticFiles(directory="static", html=True), name="static")
-    
