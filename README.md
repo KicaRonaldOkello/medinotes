@@ -1,6 +1,6 @@
 # MediNotes Pro
 
-MediNotes Pro is a web app for clinicians: you sign in, enter visit details and consultation notes, and get a **streaming AI response** with a structured summary for the record, suggested next steps, and a patient-friendly email draft. The UI is **Next.js** (static export) with **Clerk** for authentication; the consultation endpoint is implemented as **FastAPI** with OpenAI (see `api/server.py` and the `Dockerfile` for the combined static + API layout).
+MediNotes Pro is a web app for clinicians: you sign in, enter visit details and consultation notes, and get a **streaming AI response** with a structured summary for the record, suggested next steps, and a patient-friendly email draft. The UI is **Next.js** (static export) with **Clerk** for authentication; the consultation endpoint is implemented as **FastAPI** with OpenAI (see `backend/server.py` and the `Dockerfile` for the combined static + API layout).
 
 ## Environment variables
 

@@ -27,11 +27,11 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Install Python dependencies
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the FastAPI server
-COPY api/server.py .
+COPY backend/server.py .
 
 # Copy the Next.js static export from builder stage
 COPY --from=frontend-builder /app/out ./static
