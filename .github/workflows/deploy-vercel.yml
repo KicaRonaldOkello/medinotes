@@ -1,40 +1,28 @@
 name: Deploy to Vercel
 
 on:
-  push:
-    branches:
-      - main
-
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  workflow_dispatch:
 
 jobs:
-  deploy-production:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Deploy to Vercel
+        id: deploy
+        uses: amondnet/vercel-action@v25
         with:
-          node-version: "22"
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: "--prod"
 
-      - uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
-        with:
-          enable-cache: true
-          python-version: "3.12"
-
-      - name: Verify uv is on PATH
-        run: command -v uv && uv --version
-
-      - name: Install Vercel CLI
-        run: npm install -g vercel@latest
-
-      - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build project artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy pre-built artifacts to production
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Show Production URL
+        run: |
+          echo "Production URL: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
