@@ -1,6 +1,6 @@
 # MediNotes Pro
 
-MediNotes Pro is a web app for clinicians: you sign in, enter visit details and consultation notes, and get a **streaming AI response** with a structured summary for the record, suggested next steps, and a patient-friendly email draft. The UI is **Next.js** (static export) with **Clerk** for authentication; the consultation API is **FastAPI** + OpenAI (see `api/server.py`). **Vercel** serves the ASGI app from `api/server.py` and rewrites `/api/*` requests there; Python deps come from `requirements.txt`. **Docker** serves the same API plus the exported static site (see `Dockerfile`).
+MediNotes Pro is a web app for clinicians: you sign in, enter visit details and consultation notes, and get a **streaming AI response** with a structured summary for the record, suggested next steps, and a patient-friendly email draft. The UI is **Next.js** (static export) with **Clerk** for authentication; the consultation API is **FastAPI** + OpenAI (see `api/index.py`). **Vercel** serves the ASGI app from `api/index.py`; Python deps come from `requirements.txt`. **Docker** serves the same API plus the exported static site (see `Dockerfile`).
 
 ## Environment variables
 
@@ -61,7 +61,7 @@ Then open [http://localhost:8000](http://localhost:8000).
 vercel --prod
 ```
 
-The Next.js app uses **static export**; Vercel hosts that bundle. **FastAPI** is deployed from `api/server.py` and `vercel.json` rewrites `/api/*` requests to that function ([Vercel FastAPI](https://vercel.com/docs/frameworks/backend/fastapi)). Ensure `OPENAI_API_KEY` and `CLERK_JWKS_URL` are set in the Vercel project for **Production** (and Preview if you use it). The FastAPI route is defined as `/consultation`, while the browser still calls `/api/consultation`. For local `npm run dev`, the browser still calls `/api/consultation` on the Next dev server unless you proxy to FastAPI or use Docker on port 8000.
+The Next.js app uses **static export**; Vercel hosts that bundle. **FastAPI** is deployed from `api/index.py` ([Vercel FastAPI](https://vercel.com/docs/frameworks/backend/fastapi)). Ensure `OPENAI_API_KEY` and `CLERK_JWKS_URL` are set in the Vercel project for **Production** (and Preview if you use it). The FastAPI route is defined as `/consultation`, while the browser calls `/api/consultation`. For local `npm run dev`, the browser still calls `/api/consultation` on the Next dev server unless you proxy to FastAPI or use Docker on port 8000.
 
 ## Deploy on Vercel (GitHub Actions)
 
