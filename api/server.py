@@ -37,6 +37,22 @@ Reply with exactly three sections with the headings:
 ### Draft of email to patient in patient-friendly language
 """
 
+
+def llm_client_and_model() -> tuple[OpenAI, str]:
+    openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+    if openrouter_api_key:
+        client = OpenAI(
+            api_key=openrouter_api_key,
+            base_url="https://openrouter.ai/api/v1",
+        )
+        model = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+        return client, model
+
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    model = os.getenv("OPENAI_MODEL", "gpt-5-nano")
+    return client, model
+
+
 def user_prompt_for(visit: Visit) -> str:
     return f"""Create the summary, next steps and draft email for:
 Patient Name: {visit.patient_name}
@@ -50,7 +66,7 @@ def consultation_summary(
     creds: HTTPAuthorizationCredentials = Depends(clerk_guard),
 ):
     user_id = creds.decoded["sub"]
-    client = OpenAI()
+    client, model = llm_client_and_model()
     
     user_prompt = user_prompt_for(visit)
     prompt = [
@@ -59,7 +75,7 @@ def consultation_summary(
     ]
     
     stream = client.chat.completions.create(
-        model="gpt-5-nano",
+        model=model,
         messages=prompt,
         stream=True,
     )

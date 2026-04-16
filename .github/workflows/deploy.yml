@@ -58,4 +58,4 @@ jobs:
             --region=${{ env.GCP_REGION }} \
             --platform=managed \
             --allow-unauthenticated \
-            --set-secrets="CLERK_SECRET_KEY=clerk-secret:latest,CLERK_JWKS_URL=clerk-jwks-url:latest,OPENAI_API_KEY=openai-api-key:latest"
+            --set-secrets="CLERK_SECRET_KEY=clerk-secret:latest,CLERK_JWKS_URL=clerk-jwks-url:latest,OPENAI_API_KEY=openai-api-key:latest,OPENROUTER_API_KEY=openrouter-api-key:latest"
